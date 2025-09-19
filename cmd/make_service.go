@@ -16,7 +16,7 @@ var makeServiceCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		createService(name)
+		makeService(name)
 	},
 }
 
@@ -24,15 +24,14 @@ func init() {
 	rootCmd.AddCommand(makeServiceCmd)
 }
 
-func createService(name string) {
+func makeService(name string) {
 	// گرفتن مسیر و نام سرویس
 	parts := strings.Split(name, "/")
 	serviceName := parts[len(parts)-1]
 	dir := filepath.Join(append([]string{"app", "services"}, parts[:len(parts)-1]...)...)
 
 	// ساخت پوشه اگر وجود نداشت
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		fmt.Println("error creating directory:", err)
 		return
 	}
@@ -82,30 +81,10 @@ func (s *%s) FindAll(ctx context.Context) error {
 `, pkgName, serviceName, toLowerFirst(serviceName), serviceName, serviceName, toLowerFirst(serviceName), toLowerFirst(serviceName))
 
 	// نوشتن فایل
-	err = os.WriteFile(filePath, []byte(content), 0644)
-	if err != nil {
+	if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
 		log.Fatalf("error writing file: %v\n", err)
 		return
 	}
 
-	log.Println("✅ service created:", filePath)
-}
-
-// utils
-func toSnakeCase(s string) string {
-	var result []rune
-	for i, r := range s {
-		if i > 0 && r >= 'A' && r <= 'Z' {
-			result = append(result, '_')
-		}
-		result = append(result, r)
-	}
-	return strings.ToLower(string(result))
-}
-
-func toLowerFirst(s string) string {
-	if s == "" {
-		return s
-	}
-	return strings.ToLower(s[:1]) + s[1:]
+	fmt.Println("✅ service created:", filePath)
 }
