@@ -12,7 +12,7 @@ import (
 var moduleCmd = &cobra.Command{
 	Use:     "generate:module [name]",
 	Short:   "Generate a new module with boilerplate files",
-	Aliases: []string{"g mod"},
+	Aliases: []string{"g:mod [name]"},
 	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		moduleName := args[0]
