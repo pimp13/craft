@@ -10,8 +10,8 @@ import (
 )
 
 var moduleCmd = &cobra.Command{
-	Use:     "generate:module [name]",
-	Short:   "Generate a new module with boilerplate files",
+	Use:     "make:module [name]",
+	Short:   "Create a new module with boilerplate files",
 	Aliases: []string{"g:mod [name]"},
 	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -20,16 +20,21 @@ var moduleCmd = &cobra.Command{
 	},
 }
 
-func generateModule(moduleName string) error {
-	packageName := strings.ToLower(moduleName)
-	structName := strings.Title(moduleName)
+func init() {
+	rootCmd.AddCommand(moduleCmd)
+}
 
-	basePath := filepath.Join("internal", "module", packageName)
+func generateModule(moduleName string) error {
+	pathParts := strings.Split(moduleName, "/")
+
+	packageName := strings.ToLower(pathParts[len(pathParts)-1])
+	structName := strings.Title(packageName)
+
+	basePath := filepath.Join(append([]string{"internal", "module"}, pathParts...)...)
 	if err := os.MkdirAll(basePath, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create module directory: %w", err)
 	}
 
-	// محتواها
 	contents := map[string]string{
 		"service.go": fmt.Sprintf(`package %s
 
@@ -100,7 +105,6 @@ func New%sMiddleware() *%sMiddleware {
 `, packageName, structName, structName, structName, structName),
 	}
 
-	// ساخت فایل‌ها
 	for name, content := range contents {
 		filePath := filepath.Join(basePath, name)
 
@@ -117,8 +121,4 @@ func New%sMiddleware() *%sMiddleware {
 
 	fmt.Printf("🎉 module %s generated successfully!\n", moduleName)
 	return nil
-}
-
-func init() {
-	rootCmd.AddCommand(moduleCmd)
 }
