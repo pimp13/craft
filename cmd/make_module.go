@@ -92,13 +92,13 @@ type {{.StructName}}Service interface {
 	Index(ctx context.Context)
 }
 
-type {{.StructName}}ServiceImpl struct {}
+type {{.ServiceName}}Service struct {}
 
 func New{{.StructName}}Service() {{.StructName}}Service {
-	return &{{.StructName}}ServiceImpl{}
+	return &{{.ServiceName}}Service{}
 }
 
-func (s *{{.StructName}}ServiceImpl) Index(ctx context.Context) {}
+func (s *{{.ServiceName}}Service) Index(ctx context.Context) {}
 `
 
 const controllerTemplate = `package {{.PackageName}}
